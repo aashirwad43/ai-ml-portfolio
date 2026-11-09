@@ -1,1 +1,29 @@
 const titles=['AI & ML Timeline','The Big Picture, 1950–2022','Foundations: 1943–1969','The AI Winters','Revival: 1980s–2011','Deep Learning and Cloud','Leading AI Companies and Models','Key Concepts and Compute','Impact Across Industries','References'];let index=0,timer=null;const track=document.getElementById('slideTrack'),thumbs=[...document.querySelectorAll('.thumb')],lightbox=document.getElementById('lightbox');function go(n){index=(n+10)%10;track.style.transform=`translateX(-${index*100}%)`;document.getElementById('current').textContent=String(index+1).padStart(2,'0');document.getElementById('slideCaption').textContent=titles[index];document.getElementById('progressFill').style.width=`${(index+1)*10}%`;thumbs.forEach((t,i)=>{t.classList.toggle('active',i===index);t.setAttribute('aria-current',String(i===index))});thumbs[index].scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});document.getElementById('lightImg').src=`slides/slide-${String(index+1).padStart(2,'0')}.jpg`;document.getElementById('lightImg').alt=`Slide ${index+1}: ${titles[index]}`;document.getElementById('lightCount').textContent=`${index+1} / 10`}document.getElementById('prev').onclick=()=>go(index-1);document.getElementById('next').onclick=()=>go(index+1);thumbs.forEach(t=>t.onclick=()=>go(Number(t.dataset.index)));const play=document.getElementById('play');function stop(){clearInterval(timer);timer=null;play.textContent='▶ Auto-play';play.setAttribute('aria-label','Start automatic slideshow')}play.onclick=()=>{if(timer){stop();return}timer=setInterval(()=>go(index+1),5000);play.textContent='Ⅱ Pause';play.setAttribute('aria-label','Pause automatic slideshow')};document.getElementById('fullscreen').onclick=()=>{lightbox.hidden=false;document.body.style.overflow='hidden';document.getElementById('closeLightbox').focus();stop()};function close(){lightbox.hidden=true;document.body.style.overflow='';document.getElementById('fullscreen').focus()}document.getElementById('closeLightbox').onclick=close;document.getElementById('lightPrev').onclick=()=>go(index-1);document.getElementById('lightNext').onclick=()=>go(index+1);lightbox.addEventListener('click',e=>{if(e.target===lightbox)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!lightbox.hidden)close();if((!lightbox.hidden||document.activeElement===document.getElementById('slideViewport'))&&e.key==='ArrowRight'){e.preventDefault();go(index+1)}if((!lightbox.hidden||document.activeElement===document.getElementById('slideViewport'))&&e.key==='ArrowLeft'){e.preventDefault();go(index-1)}});let touchX=null;const viewport=document.getElementById('slideViewport');viewport.addEventListener('touchstart',e=>touchX=e.changedTouches[0].screenX,{passive:true});viewport.addEventListener('touchend',e=>{if(touchX===null)return;const dx=e.changedTouches[0].screenX-touchX;if(Math.abs(dx)>40)go(index+(dx<0?1:-1));touchX=null},{passive:true});if('IntersectionObserver'in window){const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(e=>obs.observe(e))}else document.querySelectorAll('.reveal').forEach(e=>e.classList.add('visible'));
+
+/* Artifact 2 evidence viewer: real screenshots extracted from the submitted AI Lab report. */
+(()=>{
+ const items=[
+  {file:'figure-a13.webp',title:'Student-facing chatbot',desc:'A student-facing GradStudy Navigator session with a practical machine-learning explanation.'},
+  {file:'figure-a01.webp',title:'Tutor instructions',desc:'Mizou configuration showing the AI tutor role, university setting, and explicit instructions.'},
+  {file:'figure-a04.webp',title:'Concept explanation',desc:'Recorded test comparing supervised and unsupervised machine learning with practical examples.'},
+  {file:'figure-a07.webp',title:'Interactive knowledge check',desc:'Recorded quiz interaction showing three questions and the tutor awaiting responses.'},
+  {file:'figure-a10.webp',title:'Applied fraud-detection reasoning',desc:'Follow-up scenario exploring active learning, human review, and limitations of fraud detection.'},
+  {file:'figure-a11.webp',title:'Public chatbot listing',desc:'Mizou listing showing GradStudy Navigator publicly listed in My Chatbots.'}
+ ];
+ const tabs=[...document.querySelectorAll('[data-evidence]')];
+ const img=document.getElementById('labEvidenceImage');
+ const count=document.getElementById('labEvidenceCount');
+ const title=document.getElementById('labEvidenceTitle');
+ const desc=document.getElementById('labEvidenceDescription');
+ const dialog=document.getElementById('labDialog');
+ if(!tabs.length||!img||!dialog) return;
+ let active=0;
+ function select(i){active=i;const item=items[i];img.src='ai-lab/evidence/'+item.file;img.alt=item.desc;count.textContent=String(i+1).padStart(2,'0')+' / 06';title.textContent=item.title;desc.textContent=item.desc;tabs.forEach((t,j)=>{t.classList.toggle('active',j===i);t.setAttribute('aria-pressed',String(j===i))});document.getElementById('labDialogImage').src=img.src;document.getElementById('labDialogImage').alt=item.desc;document.getElementById('labDialogCaption').textContent=item.title}
+ tabs.forEach(t=>t.addEventListener('click',()=>select(Number(t.dataset.evidence))));
+ const open=document.getElementById('labImageOpen'),close=document.getElementById('labDialogClose');
+ open.addEventListener('click',()=>{select(active);dialog.hidden=false;document.body.style.overflow='hidden';close.focus()});
+ function shut(){dialog.hidden=true;document.body.style.overflow='';open.focus()}
+ close.addEventListener('click',shut);
+ dialog.addEventListener('click',e=>{if(e.target===dialog)shut()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!dialog.hidden)shut()});
+})();
